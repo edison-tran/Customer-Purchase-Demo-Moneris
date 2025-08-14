@@ -1,0 +1,134 @@
+<html>
+<head>
+<title> Outer Frame - Merchant Page</title>
+<script>               
+    // this is hosted tokenization
+    function doMonerisSubmit() {
+        var monFrameRef = document.getElementById('monerisFrame').contentWindow;
+        monFrameRef.postMessage('tokenize', 'https://esqa.moneris.com/HPPtoken/index.php');
+        //change link according to table above 
+        return false;
+    }
+
+    // this is hosted tokenization
+    var respMsg = function (e) {
+        var respData = eval("(" + e.data + ")");
+        document.getElementById("monerisResponse").innerHTML = e.origin + " SENT " + " - " +
+            respData.responseCode + "-" + respData.dataKey + "-" + respData.errorMessage;
+        document.getElementById("monerisFrame").style.display = 'none';
+    }
+
+    // this is hosted tokenization
+    window.onload = function () {
+        if (window.addEventListener) {
+            window.addEventListener("message", respMsg, false);
+        }
+        else {
+            if (window.attachEvent) {
+                window.attachEvent("onmessage", respMsg);
+            }
+        }
+    }
+    
+    // Your full customer info form submit function
+function collectCustomerInfo() {
+    const customerData = {
+        idempotencyKey: document.getElementById('idempotencyKey').value,
+        firstName: document.getElementById('firstName').value,
+        middleName: document.getElementById('middleName').value,
+        lastName: document.getElementById('lastName').value,
+        companyName: document.getElementById('companyName').value,
+        address: {
+            unitNumber: document.getElementById('unitNumber').value,
+            streetNumber: document.getElementById('streetNumber').value,
+            streetName: document.getElementById('streetName').value,
+            city: document.getElementById('city').value,
+            province: document.getElementById('province').value,
+            postalCode: document.getElementById('postalCode').value,
+            country: document.getElementById('country').value
+        },
+        shippingAddress: {
+            unitNumber: document.getElementById('sUnitNumber').value,
+            streetNumber: document.getElementById('sStreetNumber').value,
+            streetName: document.getElementById('sStreetName').value,
+            city: document.getElementById('sCity').value,
+            province: document.getElementById('sProvince').value,
+            postalCode: document.getElementById('sPostalCode').value,
+            country: document.getElementById('sCountry').value
+        },
+        phoneNumber: document.getElementById('phoneNumber').value,
+        email: document.getElementById('email').value,
+        customData: {
+            exercitation1b8: document.getElementById('exercitation1b8').value,
+            aute_a: document.getElementById('aute_a').value
+        }
+    };
+
+        fetch('http://localhost:3000/api/customers', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(customerData)
+        })
+        .then(response => response.json())
+        .then(data => {
+        console.log('Success:', data);
+        alert('Customer info submitted successfully.');
+        })
+        .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to submit customer info.');
+        });
+}
+
+</script>
+</head>
+<body>
+
+<h2>Hosted Tokenization Demo</h2> 
+<!-- hosted tokenization -->
+<div id="monerisResponse"></div>
+<iframe id="monerisFrame" src="https://esqa.moneris.com/HPPtoken/index.php?id=htC9H3DZGP6X9OM&pmmsg=true&css_body=background:white;margin:0 0 0 6px;padding:0;color:darkgray;&css_textbox=font-size:0.975rem;float:left;border-width:0;margin:0 0 0 4px;padding:0;height:30px;&css_textbox_pan=width:180px;&enable_exp=1&css_textbox_exp=width:70px;&enable_cvd=1&css_textbox_cvd=width:50px;&display_labels=2&exp_label=MMYY" frameborder="0" style="width: calc(100% - 10px); height: 60px;"></iframe>           
+<input type="button" onClick="doMonerisSubmit()" value="submit iframe">
+<!-- end hosted tokenization -->
+
+<h2>Customer Information</h2>
+<form id="customerInfoForm">
+    <label>Idempotency Key: <input type="text" id="idempotencyKey" value="6q5w4e7r8t9y" /></label><br><br>
+
+    <label>First Name: <input type="text" id="firstName" /></label><br>
+    <label>Middle Name: <input type="text" id="middleName" /></label><br>
+    <label>Last Name: <input type="text" id="lastName" /></label><br>
+    <label>Company Name: <input type="text" id="companyName" /></label><br><br>
+
+    <h3>Billing Address</h3>
+    <label>Unit Number: <input type="text" id="unitNumber" /></label><br>
+    <label>Street Number: <input type="text" id="streetNumber" /></label><br>
+    <label>Street Name: <input type="text" id="streetName" /></label><br>
+    <label>City: <input type="text" id="city" /></label><br>
+    <label>Province: <input type="text" id="province" /></label><br>
+    <label>Postal Code: <input type="text" id="postalCode" /></label><br>
+    <label>Country: <input type="text" id="country" /></label><br><br>
+
+    <h3>Shipping Address</h3>
+    <label>Unit Number: <input type="text" id="sUnitNumber" /></label><br>
+    <label>Street Number: <input type="text" id="sStreetNumber" /></label><br>
+    <label>Street Name: <input type="text" id="sStreetName" /></label><br>
+    <label>City: <input type="text" id="sCity" /></label><br>
+    <label>Province: <input type="text" id="sProvince" /></label><br>
+    <label>Postal Code: <input type="text" id="sPostalCode" /></label><br>
+    <label>Country: <input type="text" id="sCountry" /></label><br><br>
+
+    <label>Phone Number: <input type="text" id="phoneNumber" /></label><br>
+    <label>Email: <input type="email" id="email" /></label><br><br>
+
+    <h3>Custom Data</h3>
+    <label>exercitation1b8: <input type="text" id="exercitation1b8" /></label><br>
+    <label>aute_a: <input type="text" id="aute_a" /></label><br><br>
+
+    <button type="button" onclick="collectCustomerInfo()">Submit Customer Info</button>
+</form>
+
+</body>
+</html>
